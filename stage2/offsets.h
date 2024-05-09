@@ -102,6 +102,15 @@
 #define kdlsym_addr_copyinstr_patch2 0xffffffff82471baf
 #define kdlsym_addr_copyinstr_patch3 0xffffffff82471be0
 
+#define kdlsym_addr_kernel_map 0xffffffff84468d48
+#define kdlsym_addr_kmem_alloc 0xffffffff8257be70
+#define kdlsym_addr_kmem_free 0xffffffff8257c040
+
+#define kdlsym_addr_sceKernelSendNotificationRequest 0xffffffff825a1b30
+#define kdlsym_addr_vsprintf 0xffffffff822b7d00
+#define kdlsym_addr_snprintf 0xffffffff822b7d30
+#define kdlsym_addr_strlen 0xffffffff8250f450
+
 
 #elif (FIRMWARE == 903 || FIRMWARE == 904) // FW 9.03 / 9.04
 
@@ -217,6 +226,15 @@
 #define kdlsym_addr_copyinstr_patch1 0xffffffff824de4e3
 #define kdlsym_addr_copyinstr_patch2 0xffffffff824de4ef
 #define kdlsym_addr_copyinstr_patch3 0xffffffff824de520
+
+#define kdlsym_addr_kernel_map 0xffffffff843ff130
+#define kdlsym_addr_kmem_alloc 0xffffffff82445e10
+#define kdlsym_addr_kmem_free 0xffffffff82445fe0
+
+#define kdlsym_addr_sceKernelSendNotificationRequest 0xffffffff82479960
+#define kdlsym_addr_vsprintf 0xffffffff824fcea0
+#define kdlsym_addr_snprintf 0xffffffff824fced0
+#define kdlsym_addr_strlen 0xffffffff8241dc40
 
 
 #else

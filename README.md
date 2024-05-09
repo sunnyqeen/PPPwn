@@ -168,3 +168,8 @@ The code will not compile on Apple Silicon and requires AMD64 architecture.
 There is a workaround using docker which will build the bin files required.
 Clone this repository to your mac system, then from the repo folder run `./build-macarm.sh`. This will build the binaries for PS4 FW 1100 and place the necessary files into the correct folders. To build the binaries for a different version, i.e. 900, run the command as such: `./build-macarm.sh 900`. Once built, copy this folder structure into the Linux VM and execute as instructed above.
 This has been tested using VMware Fusion 13.5.1, with the VM Guest as Ubuntu 24.04, and the host machine is MacOS 14.4.1
+
+## Notes for GoldHEN version
+This loader only supports payloads with a kernel entrypoint.
+The custom version of stage2 first looks for the payload in the root directory of the USB drive, and if found, it is copied to the internal HDD at this path: /data/GoldHEN/payloads/goldhen.bin. The internal payload is then loaded and is no longer needed on the external USB drive.
+At the moment, only firmware versions 9.00 and 11.00 are supported. Soon, versions 10.00/10.01 will also be supported.
