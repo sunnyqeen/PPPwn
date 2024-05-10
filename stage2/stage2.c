@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <machine/specialreg.h>
 #include "offsets.h"
+#include "payload.h"
 // clang-format on
 
 #define PS4_PAGE_SIZE 0x4000
@@ -301,6 +302,15 @@ void file_copy(struct thread *td, char* src, char* dst) {
   ksys_close(td, dest_fd);
 }
 
+void exec_payload_data(unsigned char* payload_data) {
+  uint64_t kaslr_offset = rdmsr(MSR_LSTAR) - kdlsym_addr_Xfast_syscall;
+
+  void (*entry_point)(void) = (void (*)(void))payload_data;
+  entry_point();
+
+  notify("Payload successfully loaded!");
+}
+
 void exec_payload(struct thread *td, char* payload_path) {
   void *file_buffer;
   size_t file_size;
@@ -372,7 +382,9 @@ void inject_payload(struct thread *td) {
     file_copy(td, PAYLOAD_EXT_PATH, PAYLOAD_INT_PATH);
   }
 
-  if (file_exists(td, PAYLOAD_INT_PATH)) {
+  if (payload_len > 0) {
+    exec_payload_data(payload);
+  } else if (file_exists(td, PAYLOAD_INT_PATH)) {
     exec_payload(td, PAYLOAD_INT_PATH);
   }
 }

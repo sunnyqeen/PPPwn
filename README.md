@@ -43,6 +43,12 @@ Install the requirements:
 sudo pip install -r requirements.txt
 ```
 
+Generate embedded goldhen header for stage2 payload (optional):
+
+```sh
+python3 bin2header.py -i goldhen.bin -o stage2/payload.h -v payload
+```
+
 Compile the payloads:
 
 ```sh
@@ -173,3 +179,5 @@ This has been tested using VMware Fusion 13.5.1, with the VM Guest as Ubuntu 24.
 This loader only supports payloads with a kernel entrypoint.
 The custom version of stage2 first looks for the payload in the root directory of the USB drive, and if found, it is copied to the internal HDD at this path: /data/GoldHEN/payloads/goldhen.bin. The internal payload is then loaded and is no longer needed on the external USB drive.
 At the moment, only firmware versions 9.00 and 11.00 are supported. Soon, versions 10.00/10.01 will also be supported.
+
+The goldhen.bin can also be embedded directly to stage2 via bin2header.py.

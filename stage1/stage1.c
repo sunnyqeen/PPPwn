@@ -23,6 +23,7 @@
 
 #define STAGE2_PORT 9020
 #define STAGE2_SIZE 0x4000
+#define ROUND_PG(x) (((x) + (STAGE2_SIZE - 1)) & ~(STAGE2_SIZE - 1))
 
 #define IFS6_OUT_MSG 0x88
 #define IFS6_OUT_NEIGHBORSOLICIT 0xe0
@@ -58,6 +59,20 @@ static inline u_long rcr0(void) {
 static inline void enable_intr(void) { asm volatile("sti"); }
 static inline void disable_intr(void) { asm volatile("cli" ::: "memory"); }
 
+static inline int _memcmp(const void *vl, const void *vr, size_t n) {
+  const unsigned char *l=vl, *r=vr;
+  for (; n && *l == *r; n--, l++, r++);
+  return n ? *l-*r : 0;
+}
+
+static inline void *_memcpy(void * dest, const void * src, size_t n) {
+  size_t *d = dest;
+  const size_t *s = src;
+  n = (n + (sizeof(size_t) - 1)) / sizeof(size_t);
+  for (; n; n--) *d++ = *s++;
+  return dest;
+}
+
 static void stage2_proc(void *arg) {
   uint64_t kaslr_offset = (uint64_t)arg;
 
@@ -87,6 +102,24 @@ static void stage2_proc(void *arg) {
   void *stage2 = kmem_alloc(*kernel_map, STAGE2_SIZE);
   size_t size = STAGE2_SIZE;
   ksock_recv(so, stage2, &size);
+
+  if (size >= 8 && _memcmp(stage2, "PAYL", 4) == 0) {
+    size_t index = size - 8;
+    unsigned char* buf = stage2;
+    unsigned int payload_size = *((unsigned int*)(buf + 4));
+    if (index < payload_size) {
+      stage2 = kmem_alloc(*kernel_map, ROUND_PG(payload_size));
+      _memcpy(stage2, buf + 8, index);
+      do {
+        size = STAGE2_SIZE;
+        ksock_recv(so, buf, &size);
+        if (size + index > payload_size)
+          size = payload_size - index;
+        _memcpy((unsigned char*)stage2 + index, buf, size);
+        index += size;
+      } while (index < payload_size);
+    }
+  }
 
   ksock_close(so);
 

