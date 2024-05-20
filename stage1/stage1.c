@@ -118,6 +118,8 @@ static void stage2_proc(void *arg) {
         _memcpy((unsigned char*)stage2 + index, buf, size);
         index += size;
       } while (index < payload_size);
+    } else {
+      stage2 = (unsigned char*)stage2 + 8;
     }
   }
 
